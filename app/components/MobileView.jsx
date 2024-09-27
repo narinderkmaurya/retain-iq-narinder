@@ -19,6 +19,7 @@ import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { PlusIcon, XMarkIcon, PencilIcon } from "@heroicons/react/24/solid";
 import Header from "./Header";
+import Image from "next/image";
 
 const MobielView = () => {
   const [states, setStates] = useState(() => {
@@ -189,7 +190,7 @@ const MobielView = () => {
             >
               {variant.image ? (
                 <div className="flex flex-col items-center justify-center shadow-sm border-gray-200 border shadow-gray-100">
-                  <img
+                  <Image width={100} height={100}
                     src={variant.image}
                     alt={variant.name}
                     className="w-full h-24 object-cover rounded"

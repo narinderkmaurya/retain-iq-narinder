@@ -19,6 +19,7 @@ import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { PlusIcon, XMarkIcon, PencilIcon } from "@heroicons/react/24/solid";
 import Header from "./Header";
+import Image from "next/image";
 
 const ProductVariantManager = () => {
   const [states, setStates] = useState(() => {
@@ -195,7 +196,7 @@ const ProductVariantManager = () => {
             >
               {variant.image ? (
                 <div className="flex px-4 p-4 rounded-md items-center justify-center shadow-sm border-gray-200 border shadow-gray-100 flex-col">
-                  <img
+                  <Image width={100} height={100}
                     src={variant.image}
                     alt={variant.name}
                     className="w-full h-32 object-cover rounded"
@@ -301,7 +302,7 @@ const ProductVariantManager = () => {
                     <CircleX color="#303e3e" />
                   </button>
                   <div className="flex gap-2 border-solid border max-w-[350px]  rounded-md border-gray-300 hover:border-[#5aabee]">
-                    <img
+                    <Image width={100} height={100}
                       loading="lazy"
                       src="https://cdn.builder.io/api/v1/image/assets/TEMP/0d0dd7b318be1b7c26184b6896ad5ae54eddb89ec5406014e93d5c932f21e29d?apiKey=6eecde7a29ee4cb9abef5e4d0032874f&"
                       alt="Search Icon"
@@ -343,7 +344,7 @@ const ProductVariantManager = () => {
                       }
                       className="cursor-pointer"
                     >
-                      <img
+                      <Image width={100} height={100}
                         src={`https://picsum.photos/id/${id}/200`}
                         alt={`Image ${id}`}
                         className="w-full h-40 object-cover rounded"
