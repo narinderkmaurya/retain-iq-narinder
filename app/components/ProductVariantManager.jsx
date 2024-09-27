@@ -1,5 +1,5 @@
 "use client";
-import { Images, CircleX, GripVertical, Trash2 } from "lucide-react";
+import { Images, CircleX, GripVertical, Trash2, Search } from "lucide-react";
 import React, { useState, useEffect } from "react";
 import {
   DndContext,
@@ -283,7 +283,7 @@ const ProductVariantManager = () => {
 
         {showOverlay && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-            <div className="bg-white p-4 rounded-lg w-3/4 h-3/4 overflow-y-auto">
+            <div className="bg-white p-4 rounded-lg w-3/4 h-3/4 overflow-y-auto" style={{scrollbarColor:"transparent", scrollbarWidth:"none"}}>
               <div className="flex justify-between items-end mb-4">
                 <div className="flex flex-col gap-6">
                   <div className="flex justify-between w-full items-center">
@@ -301,13 +301,8 @@ const ProductVariantManager = () => {
                   >
                     <CircleX color="#303e3e" />
                   </button>
-                  <div className="flex gap-2 border-solid border max-w-[350px]  rounded-md border-gray-300 hover:border-[#5aabee]">
-                    <Image width={100} height={100}
-                      loading="lazy"
-                      src="https://cdn.builder.io/api/v1/image/assets/TEMP/0d0dd7b318be1b7c26184b6896ad5ae54eddb89ec5406014e93d5c932f21e29d?apiKey=6eecde7a29ee4cb9abef5e4d0032874f&"
-                      alt="Search Icon"
-                      className="left-2 relative aspect-square w-[21px]"
-                    />
+                  <div className="flex gap-2 border-solid border max-w-[350px]  rounded-md border-gray-300 hover:border-[#5aabee] items-center">
+                  <span className="pl-3"> <Search className="gray"  /></span>
                     <input
                       type="text"
                       placeholder="Search "
