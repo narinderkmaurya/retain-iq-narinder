@@ -20,6 +20,7 @@ import { CSS } from "@dnd-kit/utilities";
 import { PlusIcon, XMarkIcon, PencilIcon } from "@heroicons/react/24/solid";
 import Header from "./Header";
 import Image from "next/image";
+import toast, { Toaster } from 'react-hot-toast';
 
 const MobielView = () => {
   const [states, setStates] = useState(() => {
@@ -101,10 +102,12 @@ const MobielView = () => {
         variants: newVariants,
       },
     ]);
+    toast.success('State added successfully');
   };
 
   const deleteState = (id) => {
     setStates(states.filter((state) => state.id !== id));
+    toast.success('State deleted successfully');
   };
 
   const addVariant = () => {
@@ -116,6 +119,7 @@ const MobielView = () => {
       ],
     }));
     setStates(newStates);
+    toast.success('New variant added successfully');
   };
 
   const openImageOverlay = (stateIndex, variantIndex) => {
@@ -132,6 +136,7 @@ const MobielView = () => {
       imageName;
     setStates(newStates);
     setShowOverlay(false);
+    toast.success('Image added/edited successfully');
   };
 
   const SortableItem = ({ id, productFilter, variants, index }) => {
@@ -228,6 +233,7 @@ const MobielView = () => {
 
   return (
     <div>
+      <Toaster position="top-center" />
       <div className="my-4">
         <Header />
       </div>
