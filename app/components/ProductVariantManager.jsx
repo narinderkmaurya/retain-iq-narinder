@@ -1,5 +1,6 @@
 "use client";
-import { Images, CircleX, GripVertical, Trash2, Search } from "lucide-react";
+
+import { Images, CircleX, GripVertical, Trash2, Search, Loader } from "lucide-react";
 import React, { useState, useEffect } from "react";
 import {
   DndContext,
@@ -20,6 +21,11 @@ import { CSS } from "@dnd-kit/utilities";
 import { PlusIcon, XMarkIcon, PencilIcon } from "@heroicons/react/24/solid";
 import Header from "./Header";
 import Image from "next/image";
+import toast, { Toaster } from 'react-hot-toast';
+
+const LoadingSpinner = () => (
+  <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-gray-700"></div>
+);
 
 const ProductVariantManager = () => {
   const [states, setStates] = useState(() => {
@@ -50,18 +56,24 @@ const ProductVariantManager = () => {
   });
   const [isTyping, setIsTyping] = useState(false);
   const [variantLabels, setVariantLabels] = useState(['Primary Variant', 'Variant 2']);
+  const [isAddingState, setIsAddingState] = useState(false);
+  const [isAddingVariant, setIsAddingVariant] = useState(false);
+  const [showOverlay, setShowOverlay] = useState(false);
+  const [selectedStateIndex, setSelectedStateIndex] = useState(null);
+  const [selectedVariantIndex, setSelectedVariantIndex] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
+  const [stateToDelete, setStateToDelete] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+
   const handleInputChange = (e) => {
     setIsTyping(e.target.value.length > 0);
   };
 
   useEffect(() => {
+    setIsLoading(false);
     localStorage.setItem("productStates", JSON.stringify(states));
   }, [states]);
-
-  const [showOverlay, setShowOverlay] = useState(false);
-  const [selectedStateIndex, setSelectedStateIndex] = useState(null);
-  const [selectedVariantIndex, setSelectedVariantIndex] = useState(null);
-  const [searchTerm, setSearchTerm] = useState("");
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -81,7 +93,10 @@ const ProductVariantManager = () => {
     }
   };
 
-  const addState = () => {
+  const addState = async () => {
+    setIsAddingState(true);
+    await new Promise(resolve => setTimeout(resolve, 1000)); // Simulating API call
+    
     const newId = (
       parseInt(states[states.length - 1]?.id || "0") + 1
     ).toString();
@@ -101,13 +116,27 @@ const ProductVariantManager = () => {
         variants: newVariants,
       },
     ]);
+    
+    setIsAddingState(false);
+    toast.success('State added successfully');
   };
 
-  const deleteState = (id) => {
-    setStates(states.filter((state) => state.id !== id));
+  const confirmDeleteState = (id) => {
+    setShowDeleteConfirmation(true);
+    setStateToDelete(id);
   };
 
-  const addVariant = () => {
+  const handleDeleteState = () => {
+    setStates(states.filter((state) => state.id !== stateToDelete));
+    setShowDeleteConfirmation(false);
+    setStateToDelete(null);
+    toast.success('State deleted successfully');
+  };
+
+  const addVariant = async () => {
+    setIsAddingVariant(true);
+    await new Promise(resolve => setTimeout(resolve, 1000)); // Simulating API call
+    
     const newStates = states.map((state) => ({
       ...state,
       variants: [
@@ -120,8 +149,10 @@ const ProductVariantManager = () => {
     // Update variant labels
     const newLabel = `Variant ${variantLabels.length + 1}`;
     setVariantLabels([...variantLabels, newLabel]);
+    
+    setIsAddingVariant(false);
+    toast.success('New variant added successfully');
   };
-
 
   const openImageOverlay = (stateIndex, variantIndex) => {
     setSelectedStateIndex(stateIndex);
@@ -137,6 +168,7 @@ const ProductVariantManager = () => {
       imageName;
     setStates(newStates);
     setShowOverlay(false);
+    toast.success('Image added/edited successfully');
   };
 
   const SortableItem = ({ id, productFilter, variants, index }) => {
@@ -160,7 +192,7 @@ const ProductVariantManager = () => {
       >
         <div className="flex flex-col items-start ml-4 w-24">
           <button
-            onClick={() => deleteState(id)}
+            onClick={() => confirmDeleteState(id)}
             className="text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
           >
             <Trash2 className="h-7 w-7" />
@@ -168,9 +200,9 @@ const ProductVariantManager = () => {
           <div
             {...attributes}
             {...listeners}
-            className="cursor-move mr-2 flex gap-2 items-center"
+            className="cursor-grab mr-2 flex gap-2 items-center"
           >
-            <span className="font-sans font-medium text-4xl">{parseInt(id)}</span>{" "}
+            <span className="font-serif text-4xl">{parseInt(id)}</span>{" "}
             <GripVertical className="h-6 w-6 text-gray-400" />
           </div>
         </div>
@@ -227,19 +259,28 @@ const ProductVariantManager = () => {
         <button
           onClick={addVariant}
           className="text-white p-3 rounded-md shadow border-gray-200 border shadow-gray-100"
+          disabled={isAddingVariant}
         >
-          <PlusIcon className="h-7 w-7" color="black" />
+          {isAddingVariant ? <LoadingSpinner /> : <PlusIcon className="h-7 w-7" color="black" />}
         </button>
       </div>
     );
   };
 
+  if (isLoading) {
+    return (
+      <div className="fixed inset-0 flex items-center justify-center bg-white">
+        <LoadingSpinner />
+      </div>
+    );
+  }
+
   return (
     <div className="">
+      <Toaster position="top-center" />
       <div className="my-4 ">
         <Header />
       </div>
-      {/* Add heading for the columns */}
       <div className="p-12 w-[90vw] bg-[#f9fbfc] shadow-lg rounded-lg"> 
         <div className="flex items-center justify-start space-x-6 pb-4">
           <div className="w-24" />
@@ -252,8 +293,6 @@ const ProductVariantManager = () => {
                <span className=""> {label}</span>
               </div>
             ))}
-        
-            {/* Additional variants will align automatically */}
           </div>
         </div>
 
@@ -276,8 +315,9 @@ const ProductVariantManager = () => {
           <button
             onClick={addState}
             className="text-white p-3 rounded-md shadow border-gray-200 border shadow-gray-100"
+            disabled={isAddingState}
           >
-            <PlusIcon className="h-7 w-7" color="black" />
+            {isAddingState ? <LoadingSpinner /> : <PlusIcon className="h-7 w-7" color="black" />}
           </button>
         </div>
 
@@ -347,6 +387,29 @@ const ProductVariantManager = () => {
                       <p className="mt-2 text-center">Image {id}</p>
                     </div>
                   ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {showDeleteConfirmation && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+            <div className="bg-white p-4 rounded-lg w-1/3">
+              <h2 className="text-xl font-semibold mb-4">Confirm Deletion</h2>
+              <p>Are you sure you want to delete this state?</p>
+              <div className="flex justify-end mt-4">
+                <button
+                  onClick={() => setShowDeleteConfirmation(false)}
+                  className="mr-4 px-4 py-2 bg-gray-300 rounded-md"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleDeleteState}
+                  className="px-4 py-2 bg-red-500 text-white rounded-md"
+                >
+                  Delete
+                </button>
               </div>
             </div>
           </div>
