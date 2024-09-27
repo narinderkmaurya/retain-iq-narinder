@@ -3,7 +3,7 @@ import React from 'react';
 
 const Header = () => {
     return (
-        <div className="flex flex-col sm:flex-row justify-between sm:items-center items-start p-2">
+        <div className="flex flex-col md:flex-row justify-between md:items-center items-start p-2">
             <Link href="/" className="flex items-center mb-4 md:mb-0">
                 <span className="text-2xl md:text-3xl font-bold mr-4">
                     <svg

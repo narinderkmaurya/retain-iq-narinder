@@ -5,14 +5,14 @@ import SideNav from "./components/SideNavbar";
 
 export default function Home() {
   return (
-    <div className="md:min-h-screen bg-gray-100 overflow-x-hidden">
-      <main className="flex md:min-h-screen md:w-full">
+    <div className="sm:min-h-screen bg-gray-100 overflow-x-hidden">
+      <main className="flex sm:min-h-screen sm:w-full">
         <SideNav />
-        <div className="md:flex md:items-start md:justify-start  md:px-6 md:w-screen ">
-          <div className="md:hidden">
+        <div className="sm:flex sm:items-start sm:justify-start  sm:px-6 lg:w-screen ">
+          <div className="lg:hidden pl-2">
             <MobileView />
           </div>
-          <div className="md:block hidden">
+          <div className="lg:block hidden">
             <ProductVariantManager />
           </div>
         </div>
