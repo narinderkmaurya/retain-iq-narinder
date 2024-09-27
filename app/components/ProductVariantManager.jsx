@@ -1,8 +1,6 @@
 "use client";
-import { Images, CircleX, GripVertical, Trash2, LoaderPinwheel, LoaderCircle } from "lucide-react";
+import { Images, CircleX, GripVertical, Trash2 } from "lucide-react";
 import React, { useState, useEffect } from "react";
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 import {
   DndContext,
   closestCenter,
@@ -24,7 +22,6 @@ import Header from "./Header";
 import Image from "next/image";
 
 const ProductVariantManager = () => {
-  const [loading, setLoading] = useState(false);
   const [states, setStates] = useState(() => {
     if (typeof window !== "undefined") {
       const savedStates = localStorage.getItem("productStates");
@@ -85,7 +82,6 @@ const ProductVariantManager = () => {
   };
 
   const addState = () => {
-    setLoading(true);
     const newId = (
       parseInt(states[states.length - 1]?.id || "0") + 1
     ).toString();
@@ -97,18 +93,14 @@ const ProductVariantManager = () => {
         image: "",
         name: "",
       }));
-    setTimeout(() => {
-      setStates([
-        ...states,
-        {
-          id: newId,
-          productFilter: `Add Product Filters`,
-          variants: newVariants,
-        },
-      ]);
-      setLoading(false);
-      toast.success('State added successfully');
-    }, 1000); // Simulate an API call
+    setStates([
+      ...states,
+      {
+        id: newId,
+        productFilter: `Add Product Filters`,
+        variants: newVariants,
+      },
+    ]);
   };
 
   const deleteState = (id) => {
@@ -128,8 +120,8 @@ const ProductVariantManager = () => {
     // Update variant labels
     const newLabel = `Variant ${variantLabels.length + 1}`;
     setVariantLabels([...variantLabels, newLabel]);
-    toast.success('Variant added successfully');
   };
+
 
   const openImageOverlay = (stateIndex, variantIndex) => {
     setSelectedStateIndex(stateIndex);
@@ -285,11 +277,86 @@ const ProductVariantManager = () => {
             onClick={addState}
             className="text-white p-3 rounded-md shadow border-gray-200 border shadow-gray-100"
           >
-            {loading ? <LoaderCircle  color="black" className="h-7 w-7 animate-spin" /> : <PlusIcon className="h-7 w-7" color="black" />}
+            <PlusIcon className="h-7 w-7" color="black" />
           </button>
         </div>
+
+        {showOverlay && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+            <div className="bg-white p-4 rounded-lg w-3/4 h-3/4 overflow-y-auto">
+              <div className="flex justify-between items-end mb-4">
+                <div className="flex flex-col gap-6">
+                  <div className="flex justify-between w-full items-center">
+                    <Images color="green" />
+                  </div>
+                  <span className="text-2xl font-semibold">
+                    Select a design to link
+                  </span>
+                </div>
+
+                <div className="flex flex-col items-end">
+                  <button
+                    onClick={() => setShowOverlay(false)}
+                    className="relative bottom-4"
+                  >
+                    <CircleX color="#303e3e" />
+                  </button>
+                  <div className="flex gap-2 border-solid border max-w-[350px]  rounded-md border-gray-300 hover:border-[#5aabee]">
+                    <Image width={100} height={100}
+                      loading="lazy"
+                      src="https://cdn.builder.io/api/v1/image/assets/TEMP/0d0dd7b318be1b7c26184b6896ad5ae54eddb89ec5406014e93d5c932f21e29d?apiKey=6eecde7a29ee4cb9abef5e4d0032874f&"
+                      alt="Search Icon"
+                      className="left-2 relative aspect-square w-[21px]"
+                    />
+                    <input
+                      type="text"
+                      placeholder="Search "
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className={`
+                  flex gap-3 px-5 py-2 text-sm leading-5   outline-none 
+                  ${
+                    isTyping
+                      ? "border-[#b183ff]  outline-none "
+                      : "border-zinc-400  outline-none "
+                  } border-opacity-60
+                  rounded-md text-[#9E99A5]  
+                `}
+                    />
+                  </div>
+                </div>
+              </div>
+              <div className="grid grid-cols-4 gap-4">
+                {Array.from({ length: 20 }, (_, i) => i + 1)
+                  .filter((id) =>
+                    `Image ${id}`
+                      .toLowerCase()
+                      .includes(searchTerm.toLowerCase())
+                  )
+                  .map((id) => (
+                    <div
+                      key={id}
+                      onClick={() =>
+                        selectImage(
+                          `https://picsum.photos/id/${id}/200`,
+                          `Image ${id}`
+                        )
+                      }
+                      className="cursor-pointer"
+                    >
+                      <Image width={100} height={100}
+                        src={`https://picsum.photos/id/${id}/200`}
+                        alt={`Image ${id}`}
+                        className="w-full h-40 object-cover rounded"
+                      />
+                      <p className="mt-2 text-center">Image {id}</p>
+                    </div>
+                  ))}
+              </div>
+            </div>
+          </div>
+        )}
       </div>
-      <ToastContainer />
     </div>
   );
 };
